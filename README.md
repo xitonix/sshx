@@ -12,7 +12,7 @@ go get -u go.xitonix.io/sshx
 # Add the following lines to your shell init script (ie. ~/.zshrc or ~/.bashrc)
 export SSH_IDENTITY_HOME="~/.ssh" # Or any path where you keep your keys
 alias ssh='sshx'
-alias scp='sshx'
+alias scp='sshx -scp'
 ```
 
 
