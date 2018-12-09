@@ -30,10 +30,6 @@ func main() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("failed to run the '%s' command: %s", command, err))
 	}
-	err = cmd.Wait()
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 func getCommand() (bool, string, []string) {
