@@ -7,7 +7,7 @@ This is a simple wrapper around ssh to simplify loading identity files without b
 
 
 ```shell
-go get go.xitonix.io/sshx
+go get -u go.xitonix.io/sshx
 
 # Add the following lines to your shell init script (ie. ~/.zshrc or ~/.bashrc)
 export SSH_IDENTITY_HOME="~/.ssh" # Or any path where you keep your keys
