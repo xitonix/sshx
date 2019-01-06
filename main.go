@@ -14,59 +14,88 @@ const identityEnvVariable = "SSH_IDENTITY_HOME"
 
 func main() {
 	log.SetFlags(0)
-	withIdentity, command, args := getCommand()
+
+	command, args, err := getCommand()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	cmd := exec.Command(command, args...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
-
-	if withIdentity {
-		err := setIdentitiesHome()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	err := cmd.Run()
+	wd, err := os.Getwd()
 	if err != nil {
-		log.Fatal(fmt.Errorf("failed to run the '%s' command: %s", command, err))
+		log.Fatalf("sshx: failed to access the current working directory: %s", err)
+	}
+	cmd.Dir = wd
+	err = cmd.Run()
+	if err != nil {
+		log.Fatalf("sshx: failed to run the '%s' command: %s", command, err)
 	}
 }
 
-func getCommand() (bool, string, []string) {
+func getCommand() (string, []string, error) {
 	var args []string
 	command := "ssh"
-	hasIdentity := false
-	for _, arg := range os.Args[1:] {
+
+	for i := 1; i < len(os.Args); i++ {
+		arg := os.Args[i]
 		lArg := strings.ToLower(arg)
 		if strings.HasPrefix(lArg, "-scp") {
 			command = "scp"
 			continue
 		}
-		if lArg == "-i" {
-			hasIdentity = true
-		}
 		args = append(args, arg)
+		if lArg != "-i" {
+			continue
+		}
+		identityFile := os.Args[i+1]
+		if len(identityFile) == 0 {
+			continue
+		}
+
+		id, err := prefixIdentity(identityFile)
+		if err != nil {
+			return "", nil, err
+		}
+		args = append(args, id)
+		i++
 	}
-	return hasIdentity, command, args
+	return command, args, nil
 }
 
-func setIdentitiesHome() error {
-	path := os.Getenv(identityEnvVariable)
-	trimmed := strings.TrimSpace(path)
-	if len(trimmed) == 0 {
-		return fmt.Errorf("failed to find the home for identity files. Make sure you set the %s environment variable", identityEnvVariable)
+func prefixIdentity(idArg string) (string, error) {
+	var err error
+	idArg, err = replaceHomeDir(idArg)
+	if err != nil {
+		return "", err
 	}
-	if strings.HasPrefix(trimmed, "~/") {
-		usr, err := user.Current()
-		if err != nil {
-			return fmt.Errorf("failed to find the current user's profile: %s", err)
-		}
-		path = filepath.Join(usr.HomeDir, path[2:])
+	if _, err := os.Stat(idArg); err == nil {
+		return idArg, nil
 	}
 
-	err := os.Chdir(path)
-	if err != nil {
-		return fmt.Errorf("failed to load %s: %s", path, err)
+	identityDir := os.Getenv(identityEnvVariable)
+	trimmed := strings.TrimSpace(identityDir)
+	if len(trimmed) == 0 {
+		return "", fmt.Errorf("sshx: failed to find the home for identity files. Make sure you set the %s environment variable", identityEnvVariable)
 	}
-	return nil
+
+	identityDir, err = replaceHomeDir(trimmed)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(identityDir, idArg), nil
+}
+
+func replaceHomeDir(dir string) (string, error) {
+	if !strings.HasPrefix(dir, "~/") {
+		return dir, nil
+	}
+	usr, err := user.Current()
+	if err != nil {
+		return "", fmt.Errorf("sshx: failed to find the current user's profile: %s", err)
+	}
+	return filepath.Join(usr.HomeDir, dir[2:]), nil
 }
