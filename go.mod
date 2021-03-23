@@ -1,1 +1,1 @@
-module go.xitonix.io/sshx
+module github.com/xitonix/sshx
