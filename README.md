@@ -11,7 +11,7 @@ This tool is a very simple wrapper around ssh to simplify loading identity files
 
 
 ```shell
-go get -u go.xitonix.io/sshx
+go get -u github.com/xitonix/sshx
 
 # Add the following lines to your shell init script (ie. ~/.zshrc or ~/.bashrc)
 export SSH_IDENTITY_HOME="~/.ssh" # Or any path where you keep your keys
