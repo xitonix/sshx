@@ -1,4 +1,4 @@
-package main // import "go.xitonix.io/sshx"
+package main
 
 import (
 	"fmt"
