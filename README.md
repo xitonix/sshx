@@ -9,7 +9,6 @@ This tool is a very simple wrapper around ssh to simplify loading identity files
 ## Installation
 
 
-
 ```shell
 go get -u github.com/xitonix/sshx
 
