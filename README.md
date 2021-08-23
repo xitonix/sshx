@@ -20,6 +20,7 @@ alias scp='sshx -scp'
 ```
 
 Test
+Test2
 
 # Usage
 
@@ -29,6 +30,3 @@ Once you installed the tool, you can simply use `ssh` or `scp` the normal way.
 ssh -i "identity.pem" user@host
 scp -i "identity.pem" user@host:/src/file /dest/file
 ```
-
-/ 1
-/2
