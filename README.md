@@ -19,9 +19,6 @@ alias ssh='sshx'
 alias scp='sshx -scp'
 ```
 
-Test
-Test2
-
 # Usage
 
 Once you installed the tool, you can simply use `ssh` or `scp` the normal way.
