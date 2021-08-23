@@ -14,12 +14,10 @@ const identityEnvVariable = "SSH_IDENTITY_HOME"
 
 func main() {
 	log.SetFlags(0)
-	// Test Comment
 	command, args, err := getCommand()
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Another test comment
 	cmd := exec.Command(command, args...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
