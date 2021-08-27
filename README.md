@@ -26,3 +26,5 @@ Once you installed the tool, you can simply use `ssh` or `scp` the normal way.
 ssh -i "identity.pem" user@host
 scp -i "identity.pem" user@host:/src/file /dest/file
 ```
+
+
